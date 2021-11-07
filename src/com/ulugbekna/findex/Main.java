@@ -13,7 +13,8 @@ public class Main {
         indexer.index(Paths.get("/Users/ulugbekna/code/java/findex/test/test0.txt"));
         var sc = new Scanner(System.in);
         while (sc.hasNextLine()) {
-            var r = indexer.query(sc.nextLine());
+            var userInput = sc.nextLine();
+            var r = indexer.query(userInput);
             if (r.isEmpty()) {
                 System.out.println("couldn't find any files related");
             } else {
