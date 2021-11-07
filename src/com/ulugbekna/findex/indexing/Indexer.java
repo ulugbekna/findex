@@ -7,15 +7,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Hashtable;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 public class Indexer<Token, TokenMetaInfo> {
     // TODO: do we want to replace a Hashtable with an interface for thread-safe kv store?
     // TODO: is there a smarter data structure than ArrayList? Do we want to keep a sorted ArrayList?
-    Hashtable<Token, ArrayList<TokenFileAssoc<TokenMetaInfo>>> invIndexTbl;
+    Map<Token, ArrayList<TokenFileAssoc<TokenMetaInfo>>> invIndexTbl;
     Lexer<Token, TokenMetaInfo> lexer;
 
     Comparator<TokenMetaInfo> comparator = null;
@@ -31,7 +29,7 @@ public class Indexer<Token, TokenMetaInfo> {
      * @return empty collection if no results were found.
      */
     @NotNull
-    public ArrayList<TokenFileAssoc<TokenMetaInfo>> query(Token t) {
+    public List<TokenFileAssoc<TokenMetaInfo>> query(Token t) {
         var r = invIndexTbl.get(t);
         return (r != null) ? r : new ArrayList<>();
     }
