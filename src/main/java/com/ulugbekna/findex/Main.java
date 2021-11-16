@@ -22,12 +22,12 @@ public class Main implements Runnable {
             "  to query files containing a keyword: type in the word `query` (or simply `q`), space, and keyword, " +
             "e.g., query hello";
 
-    @CommandLine.Option(names = {"-i", "--index"}, description = "Comma-separated list of paths to files for indexing",
-            split = ",")
+    @CommandLine.Option(names = {"-i", "--index"}, split = ",",
+            description = "Comma-separated list of paths to files or directories for indexing")
     List<Path> filesToIndex = new ArrayList<>();
 
-    @CommandLine.Option(names = {"-q", "--query"}, description = "Comma-separated list of keywords to query",
-            split = ",")
+    @CommandLine.Option(names = {"-q", "--query"}, split = ",",
+            description = "Comma-separated list of keywords to query")
     List<String> keywordsToQuery = new ArrayList<>();
 
     @CommandLine.Option(names = {"-j", "--jobs"}, description = "Number of threads used to index files")
@@ -58,14 +58,14 @@ public class Main implements Runnable {
 
         // index files provided as a CLI argument
         if (filesToIndex.size() > 0) {
-            // deduplicate the list of files given via a CLI argument for indexing
+            // deduplicate the list of files and dirs given via a CLI argument for indexing
             var filesToIndexSet = new LinkedHashSet<>(filesToIndex);
             filesToIndex.clear();
             filesToIndex.addAll(filesToIndexSet);
 
             Collection<Callable<Object>> indexTasks = new ArrayList<>(filesToIndex.size());
             for (var file : filesToIndex) {
-                indexTasks.add(() -> index(indexer, file));
+                indexTasks.add(() -> indexAFile(indexer, file));
             }
 
             System.out.println("Indexing started:");
@@ -93,7 +93,7 @@ public class Main implements Runnable {
         if (runAsRepl) runAsRepl(indexer, pool);
     }
 
-    private Result index(Indexer<String, ?> indexer, Path file) {
+    private Result indexAFile(Indexer<String, ?> indexer, Path file) {
         try {
             System.out.println("  Indexing file at path: " + file);
             indexer.index(file);
@@ -138,7 +138,7 @@ public class Main implements Runnable {
                     case "query", "q" -> query(indexer, inputParam);
                     case "index", "i" -> {
                         final var file = Paths.get(inputParam);
-                        var indexingResult = pool.submit(() -> index(indexer, file));
+                        var indexingResult = pool.submit(() -> indexAFile(indexer, file));
                         try {
                             if (indexingResult.get() == Result.Success) {
                                 System.out.println("  *** Indexing complete ***");
