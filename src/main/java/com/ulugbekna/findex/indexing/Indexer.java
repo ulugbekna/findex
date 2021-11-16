@@ -40,7 +40,7 @@ public class Indexer<Token, TokenMetaInfo> {
     public List<TokenFileAssoc<TokenMetaInfo>> query(Token t) {
         var r = invIndexTbl.get(t);
         return (r != null)
-                ? List.copyOf(r) // use `List.copyOf()` for defensive copying
+                ? List.copyOf(r) // return a (defensive) copy so that the client cannot directly mutate inverted index
                 : Collections.emptyList();
     }
 
@@ -51,7 +51,7 @@ public class Indexer<Token, TokenMetaInfo> {
      * <p>
      *
      * @throws FileNotFoundException if the file at the given path isn't found
-     * @throws IOException because we don't want to handle IO-related exceptions
+     * @throws IOException           because we don't want to handle IO-related exceptions
      */
     public void index(Path filePath) throws IOException {
         try (var b = new BufferedReader(new FileReader(filePath.toFile()))) {
