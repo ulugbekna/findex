@@ -43,9 +43,10 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
-        final var byWordLexer = new ByWordLexer(); // TODO: customize lexer
+        // we expect that use changes the lexer as they wish; here we use a primite lexer
+        final var lexer = new ByWordLexer();
 
-        final var indexer = new Indexer<>(byWordLexer);
+        final var indexer = new Indexer<>(lexer);
 
         ExecutorService pool;
         if (nJobs <= 0) {
