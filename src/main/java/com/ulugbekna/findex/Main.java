@@ -58,12 +58,10 @@ public class Main implements Runnable {
 
         // index files provided as a CLI argument
         if (filesToIndex.size() > 0) {
-            /* deduplicate the list of files given via a CLI argument for indexing;
-               for further discussion, see note [1] at the end of the file */
+            // deduplicate the list of files given via a CLI argument for indexing
             var filesToIndexSet = new LinkedHashSet<>(filesToIndex);
             filesToIndex.clear();
             filesToIndex.addAll(filesToIndexSet);
-            filesToIndexSet.clear(); // to avoid leaking memory by preserving pointers to not needed objects
 
             Collection<Callable<Object>> indexTasks = new ArrayList<>(filesToIndex.size());
             for (var file : filesToIndex) {
@@ -159,12 +157,3 @@ public class Main implements Runnable {
 
     enum Result {Success, Failure}
 }
-
-/*
-[1] We deduplicate the list of files to index provided via a CLI argument, but do nothing about re-indexing files,
-i.e., we don't have a list of "seen" files to prevent re-indexing or do nothing about values that
-were added in the previous indexing of the file. We can make sure that the query doesn't return files
-that were re-indexed and no longer contain a certain token by associating a file "version" value with each file
-(we could use the hash of the file as the "version"). Before returning a list of files associated by a token, we
-would filter out files that have not the current version (hash) of the file.
-*/
