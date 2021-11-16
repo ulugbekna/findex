@@ -1,5 +1,6 @@
 package com.ulugbekna.findex.indexing;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -26,7 +27,10 @@ public class Indexer<Token, TokenMetaInfo> {
      */
     private final Lexer<Token, TokenMetaInfo> lexer;
 
+    @Contract("null -> fail")
     public Indexer(Lexer<Token, TokenMetaInfo> l) {
+        Objects.requireNonNull(l);
+
         lexer = l;
         invIndexTbl = new Hashtable<>();
     }
@@ -35,9 +39,13 @@ public class Indexer<Token, TokenMetaInfo> {
      * Queries indexed files by `Token t`.
      *
      * @return empty collection if no results were found.
+     * @throws NullPointerException if the queried token `t` is `null`
      */
     @NotNull
+    @Contract("null -> fail")
     public List<TokenFileAssoc<TokenMetaInfo>> query(Token t) {
+        Objects.requireNonNull(t);
+
         var r = invIndexTbl.get(t);
         return (r != null)
                 ? List.copyOf(r) // return a (defensive) copy so that the client cannot directly mutate inverted index
@@ -50,10 +58,14 @@ public class Indexer<Token, TokenMetaInfo> {
      * Can be called concurrently, since indexing is thread-safe.
      * <p>
      *
+     * @throws NullPointerException  if the path is null
      * @throws FileNotFoundException if the file at the given path isn't found
      * @throws IOException           because we don't want to handle IO-related exceptions
      */
+    @Contract("null -> fail")
     public void index(Path filePath) throws IOException {
+        Objects.requireNonNull(filePath);
+
         try (var b = new BufferedReader(new FileReader(filePath.toFile()))) {
             var tokenFileAssocs = lexer.tokenize(b);
             tokenFileAssocs.forEach((var tokenEntry) ->
