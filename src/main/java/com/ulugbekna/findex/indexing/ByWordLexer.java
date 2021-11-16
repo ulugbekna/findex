@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/*
+ * `ByWordLexer` is a primitive example of how a lexer/tokenizer should look like to interact with
+ * `Indexer`. Since it's simply an example, we made it to support only a `BufferedReader`.
+ * A real lexer would provide support for various kinds of readers to be more flexible.
+ * */
 public class ByWordLexer implements Lexer<String, Integer> {
     public Stream<Map.Entry<String, Integer>> tokenize(Reader b) throws IOException {
         if (b instanceof BufferedReader) {
@@ -22,8 +27,7 @@ public class ByWordLexer implements Lexer<String, Integer> {
             }
             return tbl.entrySet().stream();
         } else {
-            // FIXME
-            throw new RuntimeException("implement me");
+            throw new RuntimeException("This class only supports a BufferedReader");
         }
     }
 }
