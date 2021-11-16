@@ -54,6 +54,7 @@ You can index or query keywords:
   to query files containing a keyword: type in the word `query` (or simply `q`), space, and keyword, e.g., query hello
 > query one
   Found in file: test/test1.txt
+> exit
 ```
 
 In REPL mode:
@@ -77,6 +78,7 @@ You can index or query keywords:
   Found in file: test/test0.txt
 > query what
   Couldn't find any files related to keyword what
+> exit
 ```
 
 ## Further work
@@ -114,6 +116,26 @@ Below is the list of various improvements and fixes that could be done had I mor
           hasn't changed from the last time it's being indexed. We could also use the last update time of the file to
           version it.
 
+- Refactor `Main`
+
+  `Main` is doing too much work. We should try separating it into a thinner layer over `Indexer`
+
+- Add testing for `--repl`
+
+  I did not have time to add automatic tests for `--repl` option. It could be treated as an experimental feature or
+  removed completely until properly tested.
+
+- _Nicer error handling_
+
+  Currently, we mostly simply print errors in stdout. This could be improved by more uniform error handling.
+
+- _Better separation of errors into internal and user-facing and logging_
+
+  We need to separate errors into internal indexer developer concerning and user-facing errors. A user should only see
+  the latter.
+
+  We could also have better logging for internal errors.
+
 ### Improved functionality
 
 - Allow client to provide their own inverted index implementation
@@ -140,6 +162,21 @@ Below is the list of various improvements and fixes that could be done had I mor
 
 - Use a distributed hash table for the inverted index tree to split up indexing memory load or have redundancy; could
   use Bloom filters for communication between DHT nodes to minimize communication overhead
+
+- Add sorting support by `TokenMetaInfo`
+
+  Since each token has meta-info, we could support sorting query results according to a user/lexer-provided comparison
+  function to show most useful results first. This should be easy to implement in a naive way, where we would sort the
+  results every time with the provided comparison function. This may be inefficient, so there are two solutions:
+
+    - caching: we could cache sorted results
+        1. Cache replacement policy needs to be picked: LRU?
+        2. Cache entry flushing: we flush a cache entry for a token, when the inverted index entry for that token gets
+           an update.
+    - keep a sorted list of files for a token entry in the inverted index
+        - this would result in faster lookups and no caching, but updates would be slowed down; also, since we use a
+          thread-safe inverted index data structure, we should be aware to not lock the whole data structure on sorted
+          insertion
 
 ### Performance
 
