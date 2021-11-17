@@ -23,6 +23,8 @@ Usage: findex [-hrV] [-j=<nJobs>] [-i=<filesToIndex>[,<filesToIndex>...]]...
 
 ### Various use cases
 
+A quick note before seeing examples: a file `test<i>.txt` in the examples contains words "test" and `i` as a word, e.g., `test0.txt` contains "test zero".
+
 For one-time indexing and querying several files and keywords:
 
 ```
