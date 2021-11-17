@@ -43,7 +43,7 @@ Querying "one":
 For indexing first and running in REPL mode:
 
 ```
-$ findex --index test/test0.txt,test/test1.txt
+$ findex --index test/test0.txt,test/test1.txt --repl
 Indexing started:
   Indexing file at path: test/test0.txt
   Indexing file at path: test/test1.txt
